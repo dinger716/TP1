@@ -616,11 +616,9 @@ public class Database {
 	        pstmt.setString(1, otp);
 	        ResultSet rs = pstmt.executeQuery();
 	        if (rs.next()) {
-	        	System.out.println("next is working");
 	        	int counter = rs.getInt(1);
 	            // Only do the remove if the OTP is still in the oneTimePasses table
 	        	if (counter > 0) {
-	        		System.out.println("counter is working");
         			query = "DELETE FROM oneTimePasses WHERE otp = ?";
 	        		try (PreparedStatement pstmt2 = connection.prepareStatement(query)) {
 	        			pstmt2.setString(1, otp);

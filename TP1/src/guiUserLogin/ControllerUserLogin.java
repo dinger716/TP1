@@ -77,7 +77,7 @@ public class ControllerUserLogin {
     		ViewUserLogin.alertUsernamePasswordError.showAndWait();
     		return;
     	}
-		System.out.println("*** Username is valid");
+		// System.out.println("*** Username is valid");
      	
      	
 		
@@ -114,7 +114,7 @@ public class ControllerUserLogin {
     	
     	// See which home page dispatch to use
 		int numberOfRoles = theDatabase.getNumberOfRoles(user);		
-		System.out.println("*** The number of roles: "+ numberOfRoles);
+		// System.out.println("*** The number of roles: "+ numberOfRoles);
 		
 		if (numberOfRoles == 1) {
 			// Single Account Home Page - The user has no choice here
