@@ -6,7 +6,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-//Nayef Hamdan testing
+
 /*******
  * <p> Title: FoundationsMain Class </p>
  *

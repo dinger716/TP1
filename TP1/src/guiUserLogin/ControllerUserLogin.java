@@ -77,29 +77,45 @@ public class ControllerUserLogin {
     		ViewUserLogin.alertUsernamePasswordError.showAndWait();
     		return;
     	}
-		// System.out.println("*** Username is valid");
+		System.out.println("*** Username is valid");
+     	
+     	
 		
 		// Check to see that the login password matches the account password
     	String actualPassword = theDatabase.getCurrentPassword();
     	
     	if (password.compareTo(actualPassword) != 0) {
-    		ViewUserLogin.alertUsernamePasswordError.setContentText(
-    				"Incorrect username/password. Try again!");
-    		ViewUserLogin.alertUsernamePasswordError.showAndWait();
-    		return;
+    		if(username.equals(theDatabase.getUserNameGivenOtp(password))) { // Check if using a one time password
+    			
+    			theDatabase.removeOTPAfterUse(password);
+    			password = "";
+    			theDatabase.updatePassword(username, "");
+    		}
+    		else {
+	    		ViewUserLogin.alertUsernamePasswordError.setContentText(
+	    				"Incorrect username/password. Try again!");
+	    		ViewUserLogin.alertUsernamePasswordError.showAndWait();
+	    		return;
+    		}
+    		
     	}
 		// System.out.println("*** Password is valid for this user");
 		
 		// Establish this user's details
-    	User user = new User(username, password, theDatabase.getCurrentFirstName(), 
-    			theDatabase.getCurrentMiddleName(), theDatabase.getCurrentLastName(), 
-    			theDatabase.getCurrentPreferredFirstName(), theDatabase.getCurrentEmailAddress(), 
+    	User user = new User(username, password, 
+    			theDatabase.getCurrentFirstName(), 
+    			theDatabase.getCurrentMiddleName(), 
+    			theDatabase.getCurrentLastName(), 
+    			theDatabase.getCurrentPreferredFirstName(), 
+    			theDatabase.getCurrentEmailAddress(), 
     			theDatabase.getCurrentAdminRole(), 
-    			theDatabase.getCurrentNewRole1(), theDatabase.getCurrentNewRole2());
+    			theDatabase.getCurrentNewRole1(), 
+    			theDatabase.getCurrentNewRole2());
     	
     	// See which home page dispatch to use
 		int numberOfRoles = theDatabase.getNumberOfRoles(user);		
-		// System.out.println("*** The number of roles: "+ numberOfRoles);
+		System.out.println("*** The number of roles: "+ numberOfRoles);
+		
 		if (numberOfRoles == 1) {
 			// Single Account Home Page - The user has no choice here
 			
@@ -107,17 +123,20 @@ public class ControllerUserLogin {
 			if (user.getAdminRole()) {
 				loginResult = theDatabase.loginAdmin(user);
 				if (loginResult) {
-					guiAdminHome.ViewAdminHome.displayAdminHome(theStage, user);
+					if(password == "") guiUserUpdate.ViewUserUpdate.displayUserUpdate(theStage, user);
+					else guiAdminHome.ViewAdminHome.displayAdminHome(theStage, user);
 				}
 			} else if (user.getNewRole1()) {
 				loginResult = theDatabase.loginRole1(user);
 				if (loginResult) {
-					guiRole1.ViewRole1Home.displayRole1Home(theStage, user);
+					if(password == "") guiUserUpdate.ViewUserUpdate.displayUserUpdate(theStage, user);
+					else guiRole1.ViewRole1Home.displayRole1Home(theStage, user);
 				}
 			} else if (user.getNewRole2()) {
 				loginResult = theDatabase.loginRole2(user);
 				if (loginResult) {
-					guiRole2.ViewRole2Home.displayRole2Home(theStage, user);
+					if(password == "") guiUserUpdate.ViewUserUpdate.displayUserUpdate(theStage, user);
+					else guiRole2.ViewRole2Home.displayRole2Home(theStage, user);
 				}
 				// Other roles
 			} else {

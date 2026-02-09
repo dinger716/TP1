@@ -124,7 +124,13 @@ public class Database {
 	    		+ "emailAddress VARCHAR(255), "
 	            + "role VARCHAR(10))";
 	    statement.execute(invitationCodesTable);
+	    
+	    String otpTable = "CREATE TABLE IF NOT EXISTS oneTimePasses ("
+				+ "otp VARCHAR(255) PRIMARY KEY, "
+				+ "userName VARCHAR(255) UNIQUE)";
+	    statement.execute(otpTable);
 	}
+		
 
 
 /*******
@@ -403,8 +409,10 @@ public class Database {
 	    }
 	    return code;
 	}
+	
 
 	
+
 	/*******
 	 * <p> Method: int getNumberOfInvitations() </p>
 	 * 
@@ -427,6 +435,45 @@ public class Database {
 		return 0;
 	}
 	
+	
+	/******
+	 * 
+	 */
+	//generate a one time password and inserts links it to a user
+	public String generateOneTimePassword(String userName) {
+	    String otp = UUID.randomUUID().toString().substring(0, 10); // Generate a random 10-character code
+	    String query = "INSERT INTO oneTimePasses (otp, userName) VALUES (?, ?)";
+
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setString(1, otp);
+	        pstmt.setString(2, userName);
+	        pstmt.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return otp;
+	}
+	
+	
+	/****
+	 * 
+	 */
+	public boolean otpForUserHasBeenGenerated(String userName) {
+	    String query = "SELECT COUNT(*) AS count FROM oneTimePasses WHERE userName = ?";
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setString(1, userName);
+	        ResultSet rs = pstmt.executeQuery();
+	 //     System.out.println(rs);
+	        if (rs.next()) {
+	            // Mark the code as used
+	        	return rs.getInt("count")>0;
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+		return false;
+	}
+
 	
 	/*******
 	 * <p> Method: boolean emailaddressHasBeenUsed(String emailAddress) </p>
@@ -480,7 +527,25 @@ public class Database {
 	    }
 	    return "";
 	}
-
+	
+	
+	/**
+	 * 
+	 */
+	public String getUserNameGivenOtp(String otp) {
+	    String query = "SELECT * FROM oneTimePasses WHERE otp = ?";
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setString(1, otp);
+	        ResultSet rs = pstmt.executeQuery();
+	        if (rs.next()) {
+	            return rs.getString("userName");
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return "";
+	}
+	
 	
 	/*******
 	 * <p> Method: String getEmailAddressUsingCode (String code ) </p>
@@ -541,6 +606,51 @@ public class Database {
 		return;
 	}
 	
+	
+	/*****
+	 * 
+	 */
+	public void removeOTPAfterUse(String otp) {
+	    String query = "SELECT COUNT(*) AS count FROM oneTimePasses WHERE otp = ?";
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setString(1, otp);
+	        ResultSet rs = pstmt.executeQuery();
+	        if (rs.next()) {
+	        	System.out.println("next is working");
+	        	int counter = rs.getInt(1);
+	            // Only do the remove if the OTP is still in the oneTimePasses table
+	        	if (counter > 0) {
+	        		System.out.println("counter is working");
+        			query = "DELETE FROM oneTimePasses WHERE otp = ?";
+	        		try (PreparedStatement pstmt2 = connection.prepareStatement(query)) {
+	        			pstmt2.setString(1, otp);
+	        			pstmt2.executeUpdate();
+	        		}catch (SQLException e) {
+	        	        e.printStackTrace();
+	        	    }
+	        	}
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+		return;
+	}
+	
+	
+	/****
+	 * 
+	 */
+	public void updatePassword(String username, String password) {
+	    String query = "UPDATE userDB SET password = ? WHERE username = ?";
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setString(1, password);
+	        pstmt.setString(2, username);
+	        pstmt.executeUpdate();
+	        currentPassword = password;
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	}
 	
 	/*******
 	 * <p> Method: String getFirstName(String username) </p>
@@ -1014,7 +1124,7 @@ public class Database {
 	 *  
 	 */
 	public boolean getCurrentNewRole2() { return currentNewRole2;};
-
+	
 	
 	/*******
 	 * <p> Debugging method</p>

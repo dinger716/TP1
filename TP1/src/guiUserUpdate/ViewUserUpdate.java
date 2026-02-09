@@ -5,9 +5,11 @@ import java.util.Optional;
 import database.Database;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -91,11 +93,13 @@ public class ViewUserUpdate {
 	// This button enables the user to finish working on this page and proceed to the user's home
 	// page determined by the user's role at the time of log in.
 	private static Button button_ProceedToUserHomePage = new Button("Proceed to the User Home Page");
+	protected static Alert alertNoPassword = new Alert(AlertType.INFORMATION);
 	
 	// This is the end of the GUI widgets for this page.
 	
 	// These are the set of pop-up dialog boxes that are used to enable the user to change the
 	// the values of the various account detail items.
+	private static TextInputDialog dialogUpdatePassword;
 	private static TextInputDialog dialogUpdateFirstName;
 	private static TextInputDialog dialogUpdateMiddleName;
 	private static TextInputDialog dialogUpdateLastName;
@@ -105,7 +109,8 @@ public class ViewUserUpdate {
 	// These attributes are used to configure the page and populate it with this user's information
 	private static ViewUserUpdate theView;	// Used to determine if instantiation of the class
 											// is needed
-
+	private static int passwordUpdateCheck;
+	
 	// This enables access to the application's database
 	private static Database theDatabase = applicationMain.FoundationsMain.database;
 
@@ -146,6 +151,9 @@ public class ViewUserUpdate {
 	 *
 	 */
 	public static void displayUserUpdate(Stage ps, User user) {
+		
+		// pass update checker
+		passwordUpdateCheck = 0;
 		
 		// Establish the references to the GUI and the current user
 		theUser = user;
@@ -209,12 +217,12 @@ public class ViewUserUpdate {
 	 */
 	
 	private ViewUserUpdate() {
-
 		// Create the Pane for the list of widgets and the Scene for the window
 		theRootPane = new Pane();
 		theUserUpdateScene = new Scene(theRootPane, width, height);
 
 		// Initialize the pop-up dialogs to an empty text filed.
+		dialogUpdatePassword = new TextInputDialog("");
 		dialogUpdateFirstName = new TextInputDialog("");
 		dialogUpdateMiddleName = new TextInputDialog("");
 		dialogUpdateLastName = new TextInputDialog("");
@@ -222,6 +230,10 @@ public class ViewUserUpdate {
 		dialogUpdateEmailAddresss = new TextInputDialog("");
 
 		// Establish the label for each of the dialogs.
+		dialogUpdatePassword.setTitle("Update Password");
+		dialogUpdatePassword.setHeaderText("Update your Password");
+
+		
 		dialogUpdateFirstName.setTitle("Update First Name");
 		dialogUpdateFirstName.setHeaderText("Update your First Name");
 		
@@ -255,6 +267,17 @@ public class ViewUserUpdate {
         setupLabelUI(label_Password, "Arial", 18, 190, Pos.BASELINE_RIGHT, 5, 150);
         setupLabelUI(label_CurrentPassword, "Arial", 18, 260, Pos.BASELINE_LEFT, 200, 150);
         setupButtonUI(button_UpdatePassword, "Dialog", 18, 275, Pos.CENTER, 500, 143);
+        button_UpdatePassword.setOnAction((_) -> 
+        	{result = dialogUpdatePassword.showAndWait();
+	    	result.ifPresent(_ -> theDatabase.updatePassword(theUser.getUserName(), result.get()));
+	    	theDatabase.getUserAccountDetails(theUser.getUserName());
+	     	String newPass = theDatabase.getCurrentPassword();
+	       	theUser.setPassword(newPass);
+	    	if (newPass == null || newPass.length() < 1)label_CurrentPassword.setText("<none>");
+	    	else {
+	    		label_CurrentPassword.setText(newPass);
+	    		passwordUpdateCheck++;};
+	     	});
         
         // First Name
         setupLabelUI(label_FirstName, "Arial", 18, 190, Pos.BASELINE_RIGHT, 5, 200);
@@ -325,11 +348,22 @@ public class ViewUserUpdate {
         	else label_CurrentEmailAddress.setText(newEmail);
  			});
         
+        alertNoPassword.setTitle("*** WARNING ***");
+        alertNoPassword.setHeaderText("Password not set");
+        alertNoPassword.setContentText("Update password to proceed");
+        
         // Set up the button to proceed to this user's home page
         setupButtonUI(button_ProceedToUserHomePage, "Dialog", 18, 300, 
         		Pos.CENTER, width/2-150, 450);
         button_ProceedToUserHomePage.setOnAction((_) -> 
-        	{ControllerUserUpdate.goToUserHomePage(theStage, theUser);});
+        	{
+        		if(label_CurrentPassword.getText() == "<none>") { // insure that the user can't leave until a password is set
+        			alertNoPassword.showAndWait();
+        		}else {
+        			if(passwordUpdateCheck > 0) guiUserLogin.ViewUserLogin.displayUserLogin(theStage);	
+        			else ControllerUserUpdate.goToUserHomePage(theStage, theUser);
+        			}
+        		});
     	
         // Populate the Pane's list of children widgets
         theRootPane.getChildren().addAll(

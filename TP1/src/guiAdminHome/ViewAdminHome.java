@@ -2,6 +2,7 @@ package guiAdminHome;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
@@ -11,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
@@ -104,6 +106,11 @@ public class ViewAdminHome {
 	protected static Button button_ListUsers = new Button("List All Users");
 	protected static Button button_AddRemoveRoles = new Button("Add/Remove Roles");
 	protected static Alert alertNotImplemented = new Alert(AlertType.INFORMATION);
+	
+	protected static TextInputDialog dialogsetOneTimePassword;
+	
+	protected static Optional<String> result;		// The result from a pop-up dialog
+
 
 	// This is a separator and it is used to partition the GUI for various tasks
 	private static Line line_Separator4 = new Line(20, 525, width-20,525);
@@ -242,15 +249,21 @@ public class ViewAdminHome {
 
 		setupButtonUI(button_SendInvitation, "Dialog", 16, 150, Pos.CENTER, 630, 205);
 		button_SendInvitation.setOnAction((_) -> {ControllerAdminHome.performInvitation(); });
-	
+		//private static TextInputDialog dialogUpdatePassword
 		// GUI Area 4
+		//setup empty dialogs
+		dialogsetOneTimePassword = new TextInputDialog("");
+		
+		dialogsetOneTimePassword.setTitle("Set up an OTP");
+		dialogsetOneTimePassword.setHeaderText("Input a user name");
+		
 		setupButtonUI(button_ManageInvitations, "Dialog", 16, 250, Pos.CENTER, 20, 270);
 		button_ManageInvitations.setOnAction((_) -> 
 			{ControllerAdminHome.manageInvitations(); });
 	
 		setupButtonUI(button_SetOnetimePassword, "Dialog", 16, 250, Pos.CENTER, 20, 320);
 		button_SetOnetimePassword.setOnAction((_) -> 
-			{ControllerAdminHome.setOnetimePassword(); });
+			{ControllerAdminHome.setOnetimePassword();});
 
 		setupButtonUI(button_DeleteUser, "Dialog", 16, 250, Pos.CENTER, 20, 370);
 		button_DeleteUser.setOnAction((_) -> {ControllerAdminHome.deleteUser(); });

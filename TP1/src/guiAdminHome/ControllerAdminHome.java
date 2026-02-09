@@ -111,10 +111,32 @@ public class ControllerAdminHome {
 	 * this function has not yet been implemented. </p>
 	 */
 	protected static void setOnetimePassword () {
-		System.out.println("\n*** WARNING ***: One-Time Password Not Yet Implemented");
+		/*System.out.println("\n*** WARNING ***: One-Time Password Not Yet Implemented");
 		ViewAdminHome.alertNotImplemented.setTitle("*** WARNING ***");
 		ViewAdminHome.alertNotImplemented.setHeaderText("One-Time Password Issue");
 		ViewAdminHome.alertNotImplemented.setContentText("One-Time Password Not Yet Implemented");
+		ViewAdminHome.alertNotImplemented.showAndWait();*/
+		
+		ViewAdminHome.result = ViewAdminHome.dialogsetOneTimePassword.showAndWait();
+		
+		ViewAdminHome.alertNotImplemented.setTitle("One Time Password");
+		ViewAdminHome.alertNotImplemented.setHeaderText("generated OTP for user: " + ViewAdminHome.result.get());
+		
+		ViewAdminHome.result.ifPresent(_ -> 
+			{if(theDatabase.doesUserExist(ViewAdminHome.result.get())) {
+				if(!theDatabase.otpForUserHasBeenGenerated(ViewAdminHome.result.get())) {
+					String otp = theDatabase.generateOneTimePassword(ViewAdminHome.result.get());
+					ViewAdminHome.alertNotImplemented.setContentText(otp);
+					}
+				else {ViewAdminHome.alertNotImplemented.setContentText("OTP already generated");}
+				} 
+			
+			else {
+				ViewAdminHome.alertNotImplemented.setContentText("User does not exist.");
+				}
+			}
+		);
+		
 		ViewAdminHome.alertNotImplemented.showAndWait();
 	}
 	
