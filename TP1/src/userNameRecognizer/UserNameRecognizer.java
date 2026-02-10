@@ -91,7 +91,6 @@ public class UserNameRecognizer {
 		userNameRecognizerInput = input;	// Save a copy of the input
 		running = true;						// Start the loop
 		nextState = -1;						// There is no next state
-		System.out.println("\nCurrent Final Input  Next\nState   State Char  State  Size");
 		
 		// This is the place where semantic actions for a transition to the initial state occur
 		
@@ -185,7 +184,6 @@ public class UserNameRecognizer {
 			}
 			
 			if (running) {
-				displayDebuggingInfo();
 				// When the processing of a state has finished, the FSM proceeds to the next
 				// character in the input and if there is one, it fetches that character and
 				// updates the currentChar.  If there is no next character the currentChar is
@@ -204,10 +202,6 @@ public class UserNameRecognizer {
 			// Should the FSM get here, the loop starts again
 	
 		}
-		displayDebuggingInfo();
-		
-		System.out.println("The loop has ended.");
-		
 		// When the FSM halts, we must determine if the situation is an error or not.  That depends
 		// of the current state of the FSM and whether or not the whole string has been consumed.
 		// This switch directs the execution to separate code for each of the FSM states and that

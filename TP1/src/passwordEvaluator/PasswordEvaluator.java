@@ -85,34 +85,28 @@
 			// The Directed Graph simulation continues until the end of the input is reached or at some
 			// state the current character does not match any valid transition
 			while (running) {
-				displayInputState();
+			
 				// The cascading if statement sequentially tries the current character against all of
 				// the valid transitions, each associated with one of the requirements
 				if (currentChar >= 'A' && currentChar <= 'Z') {
-					System.out.println("Upper case letter found");
 					foundUpperCase = true;
 				} else if (currentChar >= 'a' && currentChar <= 'z') {
-					System.out.println("Lower case letter found");
 					foundLowerCase = true;
 				} else if (currentChar >= '0' && currentChar <= '9') {
-					System.out.println("Digit found");
 					foundNumericDigit = true;
 				} else if ("~`!@#$%^&*()_-+{}[]|:,.?/".indexOf(currentChar) >= 0) {          
-					System.out.println("Special character found");
 					foundSpecialChar = true;
 				} else {
 					passwordIndexofError = currentCharNdx;
 					return "*** Error *** An invalid character has been found!";
 				}
 				if (currentCharNdx >= 7) {
-					System.out.println("At least 8 characters found");
 					foundLongEnough = true;
 				}
 				
 				// *** ADDED ***
 		        // Check if the password is too long   
 				if (currentCharNdx >= 24) {
-				      System.out.println("Password is too long");
 				      foundTooLong = true;
 				}
 				
@@ -123,7 +117,6 @@
 				else
 					currentChar = input.charAt(currentCharNdx);
 				
-				System.out.println();
 			}
 			
 		

@@ -272,16 +272,16 @@ public class ViewUserUpdate {
         setupButtonUI(button_UpdatePassword, "Dialog", 18, 275, Pos.CENTER, 500, 143);
         button_UpdatePassword.setOnAction((_) -> 
         	{result = dialogUpdatePassword.showAndWait();
-	    	result.ifPresent(_ -> 
-							 	     String passwordErr = PasswordEvaluator.evaluatePassword(password);
+	    	result.ifPresent(_ -> {
+							 	     String passwordErr = PasswordEvaluator.evaluatePassword(result.get());
 
-							 	          if (errMsg.length() > 0) {
+							 	          if (passwordErr.length() > 0) {
     	        	  //Create an alert
     	              javafx.scene.control.Alert alertEmailError = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
     	              alertEmailError.setTitle("Invalid Password");
     	              alertEmailError.setHeaderText("The password does not satisfy the requirements.");
     	              //Display the error message 
-    	              alertEmailError.setContentText(errMsg);
+    	              alertEmailError.setContentText(passwordErr);
     	              alertEmailError.showAndWait();
     	              return;
     	          }
@@ -360,7 +360,7 @@ public class ViewUserUpdate {
         	if (newName == null || newName.length() < 1)label_CurrentMiddleName.setText("<none>");
         	else label_CurrentMiddleName.setText(newName);
     		});
-   })
+   });
         // Last Name
         setupLabelUI(label_LastName, "Arial", 18, 190, Pos.BASELINE_RIGHT, 5, 300);
         setupLabelUI(label_CurrentLastName, "Arial", 18, 260, Pos.BASELINE_LEFT, 200, 300);
