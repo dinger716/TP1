@@ -606,6 +606,20 @@ public class Database {
 		return;
 	}
 	
+	public boolean deleteUser(String username) {
+		String query = "DELETE FROM userDB WHERE userName = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, username);
+			int rows = pstmt.executeUpdate();
+			
+			return rows > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	
 	
 	/*****
 	 * 
