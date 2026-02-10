@@ -1,10 +1,6 @@
 package database;
 
 import java.sql.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -118,11 +114,12 @@ public class Database {
 				+ "newRole2 BOOL DEFAULT FALSE)";
 		statement.execute(userTable);
 		
-		// Create the invitation codes table
+		// Create the invitation codes table with expiration time.
 	    String invitationCodesTable = "CREATE TABLE IF NOT EXISTS InvitationCodes ("
 	            + "code VARCHAR(10) PRIMARY KEY, "
 	    		+ "emailAddress VARCHAR(255), "
-	            + "role VARCHAR(10))";
+	            + "role VARCHAR(10),"
+	    		+ "expirationTime TIMESTAMP)";
 	    statement.execute(invitationCodesTable);
 	    
 	    String otpTable = "CREATE TABLE IF NOT EXISTS oneTimePasses ("
@@ -397,12 +394,18 @@ public class Database {
 	// Generates a new invitation code and inserts it into the database.
 	public String generateInvitationCode(String emailAddress, String role) {
 	    String code = UUID.randomUUID().toString().substring(0, 6); // Generate a random 6-character code
-	    String query = "INSERT INTO InvitationCodes (code, emailaddress, role) VALUES (?, ?, ?)";
+	    
+	    java.sql.Timestamp expirationTime = new java.sql.Timestamp(
+		    	System.currentTimeMillis() + (30*60*1000) 
+		);
+	    
+	    String query = "INSERT INTO InvitationCodes (code, emailaddress, role, expirationTime) VALUES (?, ?, ?, ?)";
 
 	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 	        pstmt.setString(1, code);
 	        pstmt.setString(2, emailAddress);
 	        pstmt.setString(3, role);
+	        pstmt.setTimestamp(4, expirationTime);
 	        pstmt.executeUpdate();
 	    } catch (SQLException e) {
 	        e.printStackTrace();
@@ -1179,6 +1182,112 @@ public class Database {
 		System.out.println();
 		}
 		resultSet.close();
+	}
+	
+	/*******
+	 * <p> Method: getAllUsers() </p>
+	 * 
+	 * <p> Description: Gets information for all users in the database. </p>
+	 * 
+	 */
+	public List<User> getAllUsers() {
+	    List<User> users = new ArrayList<>();
+	    String query = "SELECT * FROM userDB ORDER BY userName";
+	    
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        ResultSet rs = pstmt.executeQuery();
+	        
+	        while (rs.next()) {
+	            String userName = rs.getString("userName");
+	            String password = rs.getString("password");
+	            String firstName = rs.getString("firstName");
+	            String middleName = rs.getString("middleName");
+	            String lastName = rs.getString("lastName");
+	            String preferredFirstName = rs.getString("preferredFirstName");
+	            String emailAddress = rs.getString("emailAddress");
+	            boolean adminRole = rs.getBoolean("adminRole");
+	            boolean newRole1 = rs.getBoolean("newRole1");
+	            boolean newRole2 = rs.getBoolean("newRole2");
+	            
+	            User user = new User(userName, password, firstName, middleName, lastName, 
+	                               preferredFirstName, emailAddress, adminRole, newRole1, newRole2);
+	            users.add(user);
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    
+	    return users;
+	}
+	
+	/********
+	 * <p> Method: getAllInvitations </p>
+	 * 
+	 * <p> Description: Returns all invitations sent out by admins </p>
+	 * 
+	 */
+	public List<String[]> getAllInvitations() {
+		deleteExpiredInvitations();
+	    List<String[]> invitations = new ArrayList<>();
+	    String query = "SELECT code, emailAddress, role, expirationTime FROM InvitationCodes ORDER BY emailAddress";
+	    
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        ResultSet rs = pstmt.executeQuery();
+	        
+	        while (rs.next()) {
+	            String[] invitation = new String[4];
+	            invitation[0] = rs.getString("code");
+	            invitation[1] = rs.getString("emailAddress");
+	            invitation[2] = rs.getString("role");
+	            
+	            java.sql.Timestamp expiration = rs.getTimestamp("expirationTime");
+	            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm");
+	            invitation[3] = sdf.format(expiration);
+	            
+	            invitations.add(invitation);
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    
+	    return invitations;
+	}
+	
+	/********
+	 * Method: deletedInvitationCode(String code) </p>
+	 * 
+	 * Description: Deletes invitation from the database </p>
+	 */
+	public boolean deleteInvitationCode(String code) {
+	    String query = "DELETE FROM InvitationCodes WHERE code = ?";
+	    
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setString(1, code);
+	        int rowsAffected = pstmt.executeUpdate();
+	        return rowsAffected > 0;
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+	
+	/*********
+	 * <p> Method: deleteExpiredInvitations() </p>
+	 * 
+	 * <p> Description: Deletes all invitations codes that have expired (more than 24 hrs since creation). </p>
+	 * 
+	 */
+	public void deleteExpiredInvitations() {
+		String query = "DELETE FROM InvitationCodes WHERE expirationTime < CURRENT_TIMESTAMP";
+		
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        int deleted = pstmt.executeUpdate();
+	        if (deleted > 0) {
+	            System.out.println("Deleted " + deleted + " expired invitation(s)");
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
 	}
 
 

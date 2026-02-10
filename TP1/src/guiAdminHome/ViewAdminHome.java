@@ -174,6 +174,9 @@ public class ViewAdminHome {
 		// If not yet established, populate the static aspects of the GUI
 		if (theView == null) theView = new ViewAdminHome();		// Instantiate singleton if needed
 		
+		// Checks if theres a change in the invitation number and outputs the current.
+		label_NumberOfInvitations.setText("Number of Outstanding Invitations: " + theDatabase.getNumberOfInvitations());
+		
 		// Populate the dynamic aspects of the GUI with the data from the user and the current
 		// state of the system.
 		theDatabase.getUserAccountDetails(user.getUserName());		// Fetch this user's data
