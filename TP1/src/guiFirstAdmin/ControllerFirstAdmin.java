@@ -5,6 +5,8 @@ import database.Database;
 import entityClasses.User;
 import javafx.stage.Stage;
 import userNameRecognizer.UserNameRecognizer; //Allow use of UserNameRecognizer class 
+import passwordEvaluator.PasswordEvaluator;             //Allow use of Password Evaluator class
+
 
 /*******
  * <p> Title: ControllerFirstAdmin Class. </p>
@@ -109,10 +111,12 @@ public class ControllerFirstAdmin {
 	protected static void doSetupAdmin(Stage ps, int r) {
 		  //  See if adminUsername satisfies the FSM requirements               
 	      String errMessage =  UserNameRecognizer.checkForValidUserName(adminUsername);    
+			      // See if password satisfies the FSM requirements 
+	      String passwordErr = PasswordEvaluator.evaluatePassword(adminPassword1);
 	                 
 	      
 		// Make sure adminUsername satisfies the requirements and the two passwords are the same  
-		if (errMessage == "" && adminPassword1.compareTo(adminPassword2) == 0) {
+		if (errMessage == "" && passwordErr == "" && adminPassword1.compareTo(adminPassword2) == 0) {
         	// Create the passwords and proceed to the user home page
         	User user = new User(adminUsername, adminPassword1, "", "", "", "", "", true, false, 
         			false);
@@ -134,7 +138,17 @@ public class ControllerFirstAdmin {
 			// The adminUsername does not satisfy the FSM requirements, show the error,
 			  if (errMessage != "") {                                                   
 		          ViewFirstAdmin.label_UsernameError.setText(errMessage);               
-		      }                                   
+		      } 
+					      
+			  if (passwordErr != "") {
+			      javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+			          javafx.scene.control.Alert.AlertType.INFORMATION);
+			      alert.setTitle("Invalid Password");
+			      alert.setHeaderText("The password does not meet requirements.");
+			      alert.setContentText(passwordErr);
+			      alert.showAndWait();
+			  }
+
 			// The two passwords are NOT the same, so clear the passwords, explain the passwords
 			// must be the same, and clear the message as soon as the first character is typed.
 			 if (adminPassword1.compareTo(adminPassword2) != 0) {                      
