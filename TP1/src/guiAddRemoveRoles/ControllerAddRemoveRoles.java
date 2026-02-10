@@ -2,6 +2,7 @@ package guiAddRemoveRoles;
 
 import database.Database;
 import javafx.collections.FXCollections;
+import guiNewAccount.ViewNewAccount;
 import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 
@@ -131,9 +132,9 @@ public class ControllerAddRemoveRoles {
 		if (!theDatabase.getCurrentAdminRole())
 			ViewAddRemoveRoles.addList.add("Admin");
 		if (!theDatabase.getCurrentNewRole1())
-			ViewAddRemoveRoles.addList.add("Role1");
+			ViewAddRemoveRoles.addList.add("Student"); // Role 1 --> Student
 		if (!theDatabase.getCurrentNewRole2())
-			ViewAddRemoveRoles.addList.add("Role2");
+			ViewAddRemoveRoles.addList.add("Staff");
 
 		// Create the list of roles that could be removed for the currently selected user (e.g., Do
 		// not show a role to remove that the user does not have!)
@@ -142,9 +143,9 @@ public class ControllerAddRemoveRoles {
 		if (theDatabase.getCurrentAdminRole())
 			ViewAddRemoveRoles.removeList.add("Admin");
 		if (theDatabase.getCurrentNewRole1())
-			ViewAddRemoveRoles.removeList.add("Role1");
+			ViewAddRemoveRoles.removeList.add("Student"); // Role 1 --> Student
 		if (theDatabase.getCurrentNewRole2())
-			ViewAddRemoveRoles.removeList.add("Role2");
+			ViewAddRemoveRoles.removeList.add("Staff"); // Role 2 --> Staff
 		
 		// Create the list or roles that the user currently has with proper use of a comma between
 		// items
@@ -160,9 +161,9 @@ public class ControllerAddRemoveRoles {
 		// Roles 1 - It could be at the head of the list or later in the list
 		if (theDatabase.getCurrentNewRole1()) {
 			if (notTheFirst)
-				theCurrentRoles += ", Role1"; 
+				theCurrentRoles += ", Student"; // Role 1 --> Student
 			else {
-				theCurrentRoles += "Role1";
+				theCurrentRoles += "Student"; // Role 1 --> Student
 				notTheFirst = true;
 			}
 		}
@@ -170,9 +171,9 @@ public class ControllerAddRemoveRoles {
 		// Roles 2 - It could be at the head of the list or later in the list
 		if (theDatabase.getCurrentNewRole2()) {
 			if (notTheFirst)
-				theCurrentRoles += ", Role2"; 
+				theCurrentRoles += ", Staff"; // Role 2 --> Staff
 			else {
-				theCurrentRoles += "Role2";
+				theCurrentRoles += "Staff"; // Role 2 --> Staff
 				notTheFirst = true;
 			}
 		}
@@ -244,8 +245,14 @@ public class ControllerAddRemoveRoles {
 		// If the selection is the list header (e.g., "<Select a role>") don't do anything
 		if (ViewAddRemoveRoles.theRemoveRole.compareTo("<Select a role>") != 0) {
 			
+			// Checks whether an Admin is being removed AND the current logged in User is the same user that wants his/her role's removed
+			if (ViewAddRemoveRoles.theRemoveRole.equals("Admin") && ViewAddRemoveRoles.theSelectedUser.equals(ViewAddRemoveRoles.theUser.getUserName())) {
+				ViewAddRemoveRoles.alertDeleteAdminInvalid.setContentText("You cannot remove Admin from your own account");
+				ViewAddRemoveRoles.alertDeleteAdminInvalid.showAndWait();
+			}
+			
 			// If an actual role was selected, update the database entry for that user for the role
-			if (theDatabase.updateUserRole(ViewAddRemoveRoles.theSelectedUser, 
+			else if (theDatabase.updateUserRole(ViewAddRemoveRoles.theSelectedUser, 
 					ViewAddRemoveRoles.theRemoveRole, "false") ) {
 				ViewAddRemoveRoles.combobox_SelectRoleToRemove = new ComboBox <String>();
 				ViewAddRemoveRoles.combobox_SelectRoleToRemove.setItems(FXCollections.
@@ -253,7 +260,13 @@ public class ControllerAddRemoveRoles {
 				ViewAddRemoveRoles.combobox_SelectRoleToRemove.getSelectionModel().
 					clearAndSelect(0);		
 				setupSelectedUser();
-			}				
+			}		
+			
+			// Any other circumstance for error messages during removal of roles
+			else {
+				ViewAddRemoveRoles.alertDeleteAdminInvalid.setContentText("Deletion Error has occured");
+				ViewAddRemoveRoles.alertDeleteAdminInvalid.showAndWait();
+			}
 		}
 	}
 	
