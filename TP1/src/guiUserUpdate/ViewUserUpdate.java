@@ -262,14 +262,29 @@ public class ViewUserUpdate {
         setupLabelUI(label_Username, "Arial", 18, 190, Pos.BASELINE_RIGHT, 5, 100);
         setupLabelUI(label_CurrentUsername, "Arial", 18, 260, Pos.BASELINE_LEFT, 200, 100);
         setupButtonUI(button_UpdateUsername, "Dialog", 18, 275, Pos.CENTER, 500, 93);
-       
+
+
         // password
         setupLabelUI(label_Password, "Arial", 18, 190, Pos.BASELINE_RIGHT, 5, 150);
         setupLabelUI(label_CurrentPassword, "Arial", 18, 260, Pos.BASELINE_LEFT, 200, 150);
         setupButtonUI(button_UpdatePassword, "Dialog", 18, 275, Pos.CENTER, 500, 143);
         button_UpdatePassword.setOnAction((_) -> 
         	{result = dialogUpdatePassword.showAndWait();
-	    	result.ifPresent(_ -> theDatabase.updatePassword(theUser.getUserName(), result.get()));
+	    	result.ifPresent(_ -> 
+							 	     String passwordErr = PasswordEvaluator.evaluatePassword(password);
+
+							 	          if (errMsg.length() > 0) {
+    	        	  //Create an alert
+    	              javafx.scene.control.Alert alertEmailError = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+    	              alertEmailError.setTitle("Invalid Password");
+    	              alertEmailError.setHeaderText("The password does not satisfy the requirements.");
+    	              //Display the error message 
+    	              alertEmailError.setContentText(errMsg);
+    	              alertEmailError.showAndWait();
+    	              return;
+    	          }
+							 
+							 theDatabase.updatePassword(theUser.getUserName(), result.get());
 	    	theDatabase.getUserAccountDetails(theUser.getUserName());
 	     	String newPass = theDatabase.getCurrentPassword();
 	       	theUser.setPassword(newPass);
@@ -278,45 +293,104 @@ public class ViewUserUpdate {
 	    		label_CurrentPassword.setText(newPass);
 	    		passwordUpdateCheck++;};
 	     	});
+	});
         
         // First Name
         setupLabelUI(label_FirstName, "Arial", 18, 190, Pos.BASELINE_RIGHT, 5, 200);
         setupLabelUI(label_CurrentFirstName, "Arial", 18, 260, Pos.BASELINE_LEFT, 200, 200);
         setupButtonUI(button_UpdateFirstName, "Dialog", 18, 275, Pos.CENTER, 500, 193);
         button_UpdateFirstName.setOnAction((_) -> {result = dialogUpdateFirstName.showAndWait();
-        	result.ifPresent(_ -> theDatabase.updateFirstName(theUser.getUserName(), result.get()));
+        	result.ifPresent(_ -> 
+							         	{
+        		//*** ADDED ***
+
+                //Validate the first name using the AccountInfoRecognizer
+                String errMsg = accountInfoRecognizer.AccountInfoRecognizer.checkName(result.get(), "First Name");
+                // If there is an error
+                if (errMsg.length() > 0) {
+                    //Create an alert
+                    javafx.scene.control.Alert alertNameError = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+                    alertNameError.setTitle("Invalid First Name");
+                    alertNameError.setHeaderText("The first name does not satisfy the requirements.");
+                    //Display the error message
+                    alertNameError.setContentText(errMsg);
+                    alertNameError.showAndWait();
+                    return;
+                }
+
+							 
+							 theDatabase.updateFirstName(theUser.getUserName(), result.get());
         	theDatabase.getUserAccountDetails(theUser.getUserName());
          	String newName = theDatabase.getCurrentFirstName();
            	theUser.setFirstName(newName);
         	if (newName == null || newName.length() < 1)label_CurrentFirstName.setText("<none>");
         	else label_CurrentFirstName.setText(newName);
          	});
+	  });
                
         // Middle Name
         setupLabelUI(label_MiddleName, "Arial", 18, 190, Pos.BASELINE_RIGHT, 5, 250);
         setupLabelUI(label_CurrentMiddleName, "Arial", 18, 260, Pos.BASELINE_LEFT, 200, 250);
         setupButtonUI(button_UpdateMiddleName, "Dialog", 18, 275, Pos.CENTER, 500, 243);
         button_UpdateMiddleName.setOnAction((_) -> {result = dialogUpdateMiddleName.showAndWait();
-    		result.ifPresent(_ -> theDatabase.updateMiddleName(theUser.getUserName(), result.get()));
+    		result.ifPresent(_ -> 
+							 {
+         		//*** ADDED ***
+
+                //Validate the first name using the AccountInfoRecognizer
+                String errMsg = accountInfoRecognizer.AccountInfoRecognizer.checkName(result.get(), "Middle Name");
+                // If there is an error
+                if (errMsg.length() > 0) {
+                    //Create an alert
+                    javafx.scene.control.Alert alertNameError = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+                    alertNameError.setTitle("Invalid Middle Name");
+                    alertNameError.setHeaderText("The middle name does not satisfy the requirements.");
+                    //Display the error message
+                    alertNameError.setContentText(errMsg);
+                    alertNameError.showAndWait();
+                    return;
+                
+    		}
+							 theDatabase.updateMiddleName(theUser.getUserName(), result.get());
     		theDatabase.getUserAccountDetails(theUser.getUserName());
     		String newName = theDatabase.getCurrentMiddleName();
            	theUser.setMiddleName(newName);
         	if (newName == null || newName.length() < 1)label_CurrentMiddleName.setText("<none>");
         	else label_CurrentMiddleName.setText(newName);
     		});
-        
+   })
         // Last Name
         setupLabelUI(label_LastName, "Arial", 18, 190, Pos.BASELINE_RIGHT, 5, 300);
         setupLabelUI(label_CurrentLastName, "Arial", 18, 260, Pos.BASELINE_LEFT, 200, 300);
         setupButtonUI(button_UpdateLastName, "Dialog", 18, 275, Pos.CENTER, 500, 293);
         button_UpdateLastName.setOnAction((_) -> {result = dialogUpdateLastName.showAndWait();
-    		result.ifPresent(_ -> theDatabase.updateLastName(theUser.getUserName(), result.get()));
+    		result.ifPresent(_ -> 
+							 {
+             		//*** ADDED ***
+
+                    //Validate the first name using the AccountInfoRecognizer
+                    String errMsg = accountInfoRecognizer.AccountInfoRecognizer.checkName(result.get(), "Last Name");
+                    // If there is an error
+                    if (errMsg.length() > 0) {
+                        //Create an alert
+                        javafx.scene.control.Alert alertNameError = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+                        alertNameError.setTitle("Invalid Last Name");
+                        alertNameError.setHeaderText("The last name does not satisfy the requirements.");
+                        //Display the error message
+                        alertNameError.setContentText(errMsg);
+                        alertNameError.showAndWait();
+                        return;
+                    
+        		
+    		}
+							
     		theDatabase.getUserAccountDetails(theUser.getUserName());
     		String newName = theDatabase.getCurrentLastName();
            	theUser.setLastName(newName);
       	if (newName == null || newName.length() < 1)label_CurrentLastName.setText("<none>");
         	else label_CurrentLastName.setText(newName);
     		});
+	});
         
         // Preferred First Name
         setupLabelUI(label_PreferredFirstName, "Arial", 18, 190, Pos.BASELINE_RIGHT, 
@@ -327,26 +401,62 @@ public class ViewUserUpdate {
         button_UpdatePreferredFirstName.setOnAction((_) -> 
         	{result = dialogUpdatePreferredFirstName.showAndWait();
     		result.ifPresent(_ -> 
-    		theDatabase.updatePreferredFirstName(theUser.getUserName(), result.get()));
+
+							 {
+        		//*** ADDED ***
+
+                //Validate the first name using the AccountInfoRecognizer
+                String errMsg = accountInfoRecognizer.AccountInfoRecognizer.checkName(result.get(), "Preferred First Name");
+                // If there is an error
+                if (errMsg.length() > 0) {
+                    //Create an alert
+                    javafx.scene.control.Alert alertNameError = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+                    alertNameError.setTitle("Invalid Preferred First Name");
+                    alertNameError.setHeaderText("The preferred first name does not satisfy the requirements.");
+                    //Display the error message
+                    alertNameError.setContentText(errMsg);
+                    alertNameError.showAndWait();
+                    return;
+                
+    		}
+    		theDatabase.updatePreferredFirstName(theUser.getUserName(), result.get());
     		theDatabase.getUserAccountDetails(theUser.getUserName());
     		String newName = theDatabase.getCurrentPreferredFirstName();
            	theUser.setPreferredFirstName(newName);
          	if (newName == null || newName.length() < 1)label_CurrentPreferredFirstName.setText("<none>");
         	else label_CurrentPreferredFirstName.setText(newName);
      		});
-        
+			});
         // Email Address
         setupLabelUI(label_EmailAddress, "Arial", 18, 190, Pos.BASELINE_RIGHT, 5, 400);
         setupLabelUI(label_CurrentEmailAddress, "Arial", 18, 260, Pos.BASELINE_LEFT, 200, 400);
         setupButtonUI(button_UpdateEmailAddress, "Dialog", 18, 275, Pos.CENTER, 500, 393);
         button_UpdateEmailAddress.setOnAction((_) -> {result = dialogUpdateEmailAddresss.showAndWait();
-    		result.ifPresent(_ -> theDatabase.updateEmailAddress(theUser.getUserName(), result.get()));
+    		result.ifPresent(_ ->
+							 {
+    			//*** ADDED ***
+  
+    			  //Validate the email address using the EmailAddressRecognizer FSM
+    	          String errMsg = emailAddressRecognizer.EmailAddressRecognizer.checkEmailAddress(result.get());        
+    	          // If there is an error 
+    	          if (errMsg.length() > 0) {
+    	        	  //Create an alert
+    	              javafx.scene.control.Alert alertEmailError = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+    	              alertEmailError.setTitle("Invalid Email Address");
+    	              alertEmailError.setHeaderText("The email address does not satisfy the requirements.");
+    	              //Display the error message 
+    	              alertEmailError.setContentText(errMsg);
+    	              alertEmailError.showAndWait();
+    	              return;
+    	          }
+							 theDatabase.updateEmailAddress(theUser.getUserName(), result.get());
     		theDatabase.getUserAccountDetails(theUser.getUserName());
     		String newEmail = theDatabase.getCurrentEmailAddress();
            	theUser.setEmailAddress(newEmail);
         	if (newEmail == null || newEmail.length() < 1)label_CurrentEmailAddress.setText("<none>");
         	else label_CurrentEmailAddress.setText(newEmail);
  			});
+													 });
         
         alertNoPassword.setTitle("*** WARNING ***");
         alertNoPassword.setHeaderText("Password not set");
