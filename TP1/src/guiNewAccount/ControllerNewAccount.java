@@ -81,9 +81,11 @@ public class ControllerNewAccount {
 		
 		// See if username satisfies the FSM requirements                         
 	    String errMessage = UserNameRecognizer.checkForValidUserName(username); 
+				// See if password satisfies the FSM requirements                         
+	     String passwordErr = PasswordEvaluator.evaluatePassword(password);
 
 		// Make sure username satisfies the FSM requirements and the two passwords are the same.	
-		if (errMessage == "" && ViewNewAccount.text_Password1.getText().
+		if (errMessage == "" && passwordErr == "" && ViewNewAccount.text_Password1.getText().
 				compareTo(ViewNewAccount.text_Password2.getText()) == 0) {
 			
 			// The passwords match so we will set up the role and the User object base on the 
@@ -135,7 +137,15 @@ public class ControllerNewAccount {
 			 if (errMessage != "") {                                               
 	              ViewNewAccount.UsernameError.setContentText(errMessage);          
 	              ViewNewAccount.UsernameError.showAndWait();                       
-	          }              
+	          }             
+			  if (passwordErr != "") {
+			      javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+			          javafx.scene.control.Alert.AlertType.INFORMATION);
+			      alert.setTitle("Invalid Password");
+			      alert.setHeaderText("The password does not meet requirements.");
+			      alert.setContentText(passwordErr);
+			      alert.showAndWait();
+			  }
 			// The two passwords are NOT the same, so clear the passwords, explain the passwords
 			// must be the same, and clear the message as soon as the first character is typed.
 			 if (ViewNewAccount.text_Password1.getText().                          
