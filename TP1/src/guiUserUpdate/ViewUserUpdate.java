@@ -14,6 +14,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import entityClasses.User;
+import passwordEvaluator.PasswordEvaluator;             //Allow use of Password Evaluator class
+
 
 /*******
  * <p> Title: ViewUserUpdate Class. </p>
