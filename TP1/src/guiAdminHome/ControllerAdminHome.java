@@ -208,13 +208,26 @@ public class ControllerAdminHome {
 	 * 
 	 * @param emailAddress	This String holds what is expected to be an email address
 	 */
-	protected static boolean invalidEmailAddress(String emailAddress) {
+protected static boolean invalidEmailAddress(String emailAddress) {
 		if (emailAddress.length() == 0) {
 			ViewAdminHome.alertEmailError.setContentText(
 					"Correct the email address and try again.");
 			ViewAdminHome.alertEmailError.showAndWait();
 			return true;
 		}
+		// *** ADDED ***
+		// Validate the email address using the EmailAddressRecognizer FSM
+		String errMsg = emailAddressRecognizer.EmailAddressRecognizer.checkEmailAddress(emailAddress);
+		// If there is an error
+		if (errMsg.length() > 0) {
+			//Display the alert and set title and header
+		    ViewAdminHome.alertEmailError.setTitle("Invalid Email Address");
+		    ViewAdminHome.alertEmailError.setHeaderText("The email address does not satisfy the requirements.");
+		    //Display the error message
+		    ViewAdminHome.alertEmailError.setContentText(errMsg);
+		    ViewAdminHome.alertEmailError.showAndWait();
+		    return true;
+		 }
 		return false;
 	}
 	
