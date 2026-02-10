@@ -964,6 +964,25 @@ public class Database {
 	 */
 	// Update a users role
 	public boolean updateUserRole(String username, String role, String value) {
+
+			/*******
+			 * Admin constraints was initialy placed here but due to debugging issues, it is now in the main controller file
+			 * 
+			 * No Need for calculation of number of admins via Database since always one Admin is present
+			 * User cannot delete their own Admin role
+			 * 
+			 * Admin Constraints Psuedocode
+			 * => IF username == currentLoggedInUsername THEN
+			 * =>    RETURN FALSE
+			 * => # NOT Needed but in case
+			 * => 
+			 * => adminCount = COUNT(users WHERE admin_role == true)
+			 * => IF adminCount <= 1 THEN
+			 * =>    RETURN FALSE
+			 * 
+			 * 
+			 * */
+		
 		if (role.compareTo("Admin") == 0) {
 			String query = "UPDATE userDB SET adminRole = ? WHERE username = ?";
 			try (PreparedStatement pstmt = connection.prepareStatement(query)) {
@@ -979,7 +998,7 @@ public class Database {
 				return false;
 			}
 		}
-		if (role.compareTo("Role1") == 0) {
+		if (role.compareTo("Student") == 0) {
 			String query = "UPDATE userDB SET newRole1 = ? WHERE username = ?";
 			try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 				pstmt.setString(1, value);
@@ -994,7 +1013,7 @@ public class Database {
 				return false;
 			}
 		}
-		if (role.compareTo("Role2") == 0) {
+		if (role.compareTo("Staff") == 0) {
 			String query = "UPDATE userDB SET newRole2 = ? WHERE username = ?";
 			try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 				pstmt.setString(1, value);
