@@ -15,6 +15,9 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import database.Database;
 import entityClasses.User;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+
 
 /*******
  * <p> Title: GUIAddRemoveRolesPage Class. </p>
@@ -72,6 +75,10 @@ public class ViewAddRemoveRoles {
 	protected static Label label_SelectRoleToBeAdded = new Label("Select a role to be added:");
 	protected static ComboBox <String> combobox_SelectRoleToAdd = new ComboBox <String>();	
 	protected static Label label_SelectRoleToBeRemoved = new Label("Select a role to be removed:");
+
+	// This alert is used should the user not meet the username requirements
+	protected static Alert alertDeleteAdminInvalid = new Alert(AlertType.INFORMATION);
+	
 	protected static ComboBox <String> combobox_SelectRoleToRemove = new ComboBox <String>();
 		
 	// This is a separator and it is used to partition the GUI for various tasks
@@ -220,6 +227,11 @@ public class ViewAddRemoveRoles {
     
 		setupButtonUI(button_Quit, "Dialog", 18, 210, Pos.CENTER, 570, 540);
 		button_Quit.setOnAction((_) -> {ControllerAddRemoveRoles.performQuit(); });
+
+		// If Admin Role being removed from self, Exception Alert called
+		alertDeleteAdminInvalid.setTitle("Admin Role Delete Error");
+		alertDeleteAdminInvalid.setHeaderText("Cannot Delete Admin Role");
+		alertDeleteAdminInvalid.setContentText("You cannot remove Admin from your own account");
 		
 		// This is the end of the GUI Widgets for the page
 		
