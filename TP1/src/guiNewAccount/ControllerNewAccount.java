@@ -9,6 +9,7 @@ import database.Database;
 import entityClasses.User;
 import userNameRecognizer.UserNameRecognizer; //Allow use of UserNameRecognizer class 
 import passwordEvaluator.PasswordEvaluator;
+
 /*******
  * <p> Title: ControllerNewAccount Class. </p>
  * 
