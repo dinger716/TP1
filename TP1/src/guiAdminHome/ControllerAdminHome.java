@@ -209,12 +209,7 @@ public class ControllerAdminHome {
 	 * @param emailAddress	This String holds what is expected to be an email address
 	 */
 protected static boolean invalidEmailAddress(String emailAddress) {
-		if (emailAddress.length() == 0) {
-			ViewAdminHome.alertEmailError.setContentText(
-					"Correct the email address and try again.");
-			ViewAdminHome.alertEmailError.showAndWait();
-			return true;
-		}
+	
 		// *** ADDED ***
 		// Validate the email address using the EmailAddressRecognizer FSM
 		String errMsg = emailAddressRecognizer.EmailAddressRecognizer.checkEmailAddress(emailAddress);

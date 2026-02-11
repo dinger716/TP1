@@ -386,7 +386,7 @@ public class ViewUserUpdate {
                     
         		
     		}
-							
+            theDatabase.updateLastName(theUser.getUserName(), result.get());							
     		theDatabase.getUserAccountDetails(theUser.getUserName());
     		String newName = theDatabase.getCurrentLastName();
            	theUser.setLastName(newName);

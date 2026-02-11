@@ -107,14 +107,14 @@ public class EmailAddressRecognizer {
 		// Let's ensure there is input
 		if (input.length() <= 0) {
 			emailAddressErrorMessage = "There was no email address found.\n";
-			return emailAddressErrorMessage + displayInput(input, 0);
+			return emailAddressErrorMessage;
 		}
 		currentChar = input.charAt(0);		// The current character from the above indexed position
 
 		// Let's ensure the address is not too long
 		if (input.length() > 255) {
 			emailAddressErrorMessage = "A valid email address must be no more than 255 characters.\n";
-			return emailAddressErrorMessage + displayInput(input, 255);
+			return emailAddressErrorMessage;
 		}
 		running = true;						// Start the loop
 		domainPartCounter = 0;              // ***ADDED*** Initialize the domain part counter
@@ -364,8 +364,8 @@ public class EmailAddressRecognizer {
 				// Update error message emailAddressErrorMessage = "This must be the end of the input.\n";
 				// *** ADDED ***
 				
-				emailAddressErrorMessage = "An Email Address character may only contain the characters A-Z, a-z, 0-9, @, ., or -.\n";
-				return emailAddressErrorMessage + displayInput(input, currentCharNdx);
+				emailAddressErrorMessage = "An Email Address character may only contain the characters A-Z, a-z, 0-9, @, ., or -\n";
+				return emailAddressErrorMessage;
 			}
 			else 
 			{

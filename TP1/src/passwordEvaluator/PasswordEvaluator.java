@@ -130,7 +130,7 @@
 				errMessage += "Lower case; ";
 			
 			if (!foundNumericDigit)
-				errMessage += "Numeric digits; ";
+				errMessage += "Numeric digit; ";
 				
 			if (!foundSpecialChar)
 				errMessage += "Special character; ";
