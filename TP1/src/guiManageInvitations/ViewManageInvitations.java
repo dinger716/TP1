@@ -50,7 +50,6 @@ public class ViewManageInvitations {
 	
 	// Action buttons
 	protected static Button button_DeleteInvitation = new Button("Delete Selected Invitation");
-	protected static Button button_Refresh = new Button("Refresh");
 	
 	protected static Line line_Separator5 = new Line(20, 525, width-20, 525);
 	
@@ -105,9 +104,6 @@ public class ViewManageInvitations {
 		setupButtonUI(button_DeleteInvitation, "Dialog", 18, 250, Pos.CENTER, 20, 495);
 		button_DeleteInvitation.setOnAction((_) -> {ControllerManageInvitations.performDeleteInvitation(); });
 		
-		setupButtonUI(button_Refresh, "Dialog", 18, 150, Pos.CENTER, 300, 495);
-		button_Refresh.setOnAction((_) -> {populateInvitationTable(); });
-		
 		// Navigation buttons
 		setupButtonUI(button_Return, "Dialog", 18, 210, Pos.CENTER, 20, 540);
 		button_Return.setOnAction((_) -> {ControllerManageInvitations.performReturn(); });
@@ -121,7 +117,7 @@ public class ViewManageInvitations {
 		theRootPane.getChildren().addAll(
 			label_PageTitle, label_UserDetails, button_UpdateThisUser, line_Separator1,
 			table_Invitations, line_Separator4,
-			button_DeleteInvitation, button_Refresh, line_Separator5,
+			button_DeleteInvitation, line_Separator5,
 			button_Return, button_Logout, button_Quit);
 	}
 
