@@ -7,7 +7,7 @@ import javafx.stage.Stage;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
-/*******
+/******* boom waddup solorenekton here
  * <p> Title: FoundationsMain Class </p>
  *
  * <p> Description: This is the Main Class that launches the Foundations demonstration
